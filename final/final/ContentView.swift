@@ -7,24 +7,31 @@
 
 import SwiftUI
 import FirebaseAuth
+//import SwiftProtobuf
 struct ContentView: View {
+    @State private var viewController:Int=0
+    @State private var userMail:String=""
     var body: some View {
-        Text("Hello, world!")
-            .padding()
-        Button{
-            Auth.auth().signIn(withEmail: "seer.28921085@gmail.com", password: "0000000") { result, error in
-                 guard error == nil else {
-                    print(error?.localizedDescription)
-                    return
-                 }
-            }
-        }label:{
-            if let user = Auth.auth().currentUser {
-                Text("\(user.uid)")
-            } else {
-                Text("login")
+        ZStack{
+            Image("background")
+                .resizable()
+                .scaledToFill()
+            switch viewController{
+            case 0:
+                startPage(viewController: $viewController,userMail: $userMail)
+            case 1:
+                loginPage(viewController: $viewController,userMail: $userMail)
+            case 2:
+                registerPage(viewController: $viewController)
+            case 3:
+                userPage(viewController: $viewController,userMail: $userMail)
+            case 4:
+                userProfilePage(viewController: $viewController,userMail: $userMail)
+            default:
+                startPage(viewController: $viewController,userMail: $userMail)
             }
         }
+        
     }
 }
 
