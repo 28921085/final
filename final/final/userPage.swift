@@ -7,6 +7,8 @@
 
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 struct userPage: View {
     @Binding var viewController:Int
     @Binding var userMail:String
@@ -27,7 +29,7 @@ struct userPage: View {
                     }
                 }
                 Button{
-                    viewController=4
+                   // viewController=4
                 }label:{
                     VStack{
                         HStack(alignment: .center){

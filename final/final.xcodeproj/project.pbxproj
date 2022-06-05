@@ -22,6 +22,7 @@
 		26A76E0628465CEB005C1AA8 /* registerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76E0528465CEB005C1AA8 /* registerPage.swift */; };
 		26A76E0828467732005C1AA8 /* userPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76E0728467732005C1AA8 /* userPage.swift */; };
 		26A76E0A284738D3005C1AA8 /* userProfilePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76E09284738D3005C1AA8 /* userProfilePage.swift */; };
+		26EFCEE1284B9E1700B1E1D8 /* userData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EFCEE0284B9E1700B1E1D8 /* userData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		26A76E0528465CEB005C1AA8 /* registerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = registerPage.swift; sourceTree = "<group>"; };
 		26A76E0728467732005C1AA8 /* userPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userPage.swift; sourceTree = "<group>"; };
 		26A76E09284738D3005C1AA8 /* userProfilePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userProfilePage.swift; sourceTree = "<group>"; };
+		26EFCEE0284B9E1700B1E1D8 /* userData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				26A76DD228451169005C1AA8 /* Assets.xcassets */,
 				26A76E0328465B63005C1AA8 /* startPage.swift */,
 				26A76E09284738D3005C1AA8 /* userProfilePage.swift */,
+				26EFCEE0284B9E1700B1E1D8 /* userData.swift */,
 				26A76E0728467732005C1AA8 /* userPage.swift */,
 				26A76E0528465CEB005C1AA8 /* registerPage.swift */,
 				26A76E0128465A1B005C1AA8 /* loginPage.swift */,
@@ -280,6 +283,7 @@
 			files = (
 				26A76E0628465CEB005C1AA8 /* registerPage.swift in Sources */,
 				26A76DD128451167005C1AA8 /* ContentView.swift in Sources */,
+				26EFCEE1284B9E1700B1E1D8 /* userData.swift in Sources */,
 				26A76E0428465B63005C1AA8 /* startPage.swift in Sources */,
 				26A76E0A284738D3005C1AA8 /* userProfilePage.swift in Sources */,
 				26A76E0828467732005C1AA8 /* userPage.swift in Sources */,

@@ -7,6 +7,8 @@
 
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 struct registerPage: View {
     @Binding var viewController:Int
     @State private var account = ""
@@ -47,7 +49,6 @@ struct registerPage: View {
                     }
                     else{
                         Auth.auth().createUser(withEmail: account, password: passwd1) { result, error in
-                                    
                              guard let user = result?.user,
                                    error == nil else {
                                  print(error?.localizedDescription)
@@ -55,9 +56,21 @@ struct registerPage: View {
                                  isPresented=true
                                  return
                              }
-                            alertTitle="註冊成功，請回登入畫面登入"
+                            alertTitle="註冊成功，請前往設置個人資料"
                             isPresented=true
                              print(user.email, user.uid)
+                            //sent data
+                            let db = Firestore.firestore()
+                            var data = userData()
+                            data.id=user.uid
+                            data.email=user.email ?? ""
+                            //data.name="11111"
+                            do {
+                                let documentReference = try db.collection("userdatas").addDocument(from: data)
+                                print(documentReference.documentID)
+                            } catch {
+                                print(error)
+                            }
                         }
                         /*
                         Auth.auth().signIn(withEmail: account, password: passwd1) { result, error in
@@ -91,8 +104,8 @@ struct registerPage: View {
                 }
             }.alert(alertTitle, isPresented: $isPresented, actions: {
                 Button("OK"){
-                    if alertTitle == "註冊成功，請回登入畫面登入"{
-                        viewController=1
+                    if alertTitle == "註冊成功，請前往設置個人資料"/*"註冊成功，請回登入畫面登入"*/{
+                        viewController=4
                     }
                 }
             })

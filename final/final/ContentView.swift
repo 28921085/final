@@ -11,6 +11,7 @@ import FirebaseAuth
 struct ContentView: View {
     @State private var viewController:Int=0
     @State private var userMail:String=""
+    @State private var userdata=userData()
     var body: some View {
         ZStack{
             Image("background")
@@ -18,7 +19,7 @@ struct ContentView: View {
                 .scaledToFill()
             switch viewController{
             case 0:
-                startPage(viewController: $viewController,userMail: $userMail)
+                startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
             case 1:
                 loginPage(viewController: $viewController,userMail: $userMail)
             case 2:
@@ -28,15 +29,16 @@ struct ContentView: View {
             case 4:
                 userProfilePage(viewController: $viewController,userMail: $userMail)
             default:
-                startPage(viewController: $viewController,userMail: $userMail)
+                startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
             }
         }
         
     }
 }
-
+/*
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
 }
+*/

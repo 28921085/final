@@ -7,9 +7,12 @@
 
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestoreSwift
+import FirebaseFirestore
 struct startPage: View {
     @Binding var viewController:Int
     @Binding var userMail:String
+    @Binding var userData:userData
     var body: some View {
         VStack{
             if let user = Auth.auth().currentUser {
@@ -29,6 +32,15 @@ struct startPage: View {
                                         .foregroundColor(Color.white)
                                 }
                             )
+                            .onAppear(perform: {
+                                let db = Firestore.firestore()
+                                db.collection("userdatas").document("\(user.uid)").getDocument(completion: { document, error in
+                                    guard let document = document,
+                                           document.exists,
+                                          let userInfo = try? document.data(as: final.userData.self) else {return}
+                                    userData=userInfo
+                                })
+                            })
                     }
                    
                 }
