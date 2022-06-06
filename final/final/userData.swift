@@ -8,6 +8,7 @@ struct userData: Hashable,Codable, Identifiable {
     var country:String
     var gender:String
     var coin:Int
+    var joinDate:String
     init(){
         name=""
         email=""
@@ -15,5 +16,6 @@ struct userData: Hashable,Codable, Identifiable {
         country=""
         gender=""
         coin=0
+        joinDate=""
     }
 }

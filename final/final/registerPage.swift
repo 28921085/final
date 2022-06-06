@@ -60,7 +60,7 @@ struct registerPage: View {
                             isPresented=true
                              print(user.email, user.uid)
                             //sent data
-                            let db = Firestore.firestore()
+                            /*let db = Firestore.firestore()
                             var data = userData()
                             data.id=user.uid
                             data.email=user.email ?? ""
@@ -70,7 +70,7 @@ struct registerPage: View {
                                 print(documentReference.documentID)
                             } catch {
                                 print(error)
-                            }
+                            }*/
                         }
                         /*
                         Auth.auth().signIn(withEmail: account, password: passwd1) { result, error in
