@@ -29,7 +29,7 @@ struct userPage: View {
                     }
                 }
                 Button{
-                   // viewController=4
+                    viewController=5
                 }label:{
                     VStack{
                         HStack(alignment: .center){
@@ -37,12 +37,8 @@ struct userPage: View {
                                 .fill(Color.blue)
                                 .frame(width: 120, height: 60, alignment: .center)
                                 .overlay(
-                                    VStack{
-                                        Text("👤")
-                                            .foregroundColor(Color.white)
-                                        Text("\(userMail)")
-                                            .foregroundColor(Color.white)
-                                    }
+                                    Text("👤帳戶中心")
+                                        .foregroundColor(Color.white)
                                 )
                         }
                     }

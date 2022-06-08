@@ -59,35 +59,9 @@ struct registerPage: View {
                             alertTitle="註冊成功，請前往設置個人資料"
                             isPresented=true
                              print(user.email, user.uid)
-                            //sent data
-                            /*let db = Firestore.firestore()
-                            var data = userData()
-                            data.id=user.uid
-                            data.email=user.email ?? ""
-                            //data.name="11111"
-                            do {
-                                let documentReference = try db.collection("userdatas").addDocument(from: data)
-                                print(documentReference.documentID)
-                            } catch {
-                                print(error)
-                            }*/
+                           
                         }
-                        /*
-                        Auth.auth().signIn(withEmail: account, password: passwd1) { result, error in
-                             guard error == nil else {
-                                print(error?.localizedDescription)
-                                 //print("fail")
-                                 alertTitle="login fail"
-                                 isPresented=true
-                                 return
-                             }
-                            if let user = Auth.auth().currentUser {
-                                //print("\(user.email)")
-                                alertTitle="hi \(user.email ?? "")"
-                                isPresented=true
-                            }
-                        }
-                         */
+                       
                     }
                     
                 } label: {

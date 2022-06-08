@@ -27,7 +27,9 @@ struct ContentView: View {
             case 3:
                 userPage(viewController: $viewController,userMail: $userMail)
             case 4:
-                userProfilePage(viewController: $viewController,userMail: $userMail)
+                userProfileSettingPage(viewController: $viewController,userMail: $userMail)
+            case 5:
+                userProfilePage(viewController: $viewController)
             default:
                 startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
             }
