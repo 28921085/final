@@ -75,10 +75,11 @@ struct Game_killer: View {
                                 else{
                                     if map[i+kx+index_offset-4][j+ky+index_offset-4] == 0{//ground
                                         Rectangle()
-                                            .fill(Color.gray)
+                                            .fill(check(x: i, y: j) ? (command[0] == 1 ? Color.red : (command[1] == 1 ? Color.green : (command[2] == 1 ? Color.yellow : Color.gray))) :  Color.gray)
                                             .frame(width:screenWidth/10,height: screenWidth/10)
                                             .overlay(
-                                                (i == 4 && j == 4) ? Text("\(killerType)").font(.system(size:screenWidth/10))
+                                                (i == 4 && j == 4) ?
+                                                Text("\(killerType)").font(.system(size:screenWidth/10))
                                                  : Text("")
                                             )
                                             .onTapGesture(perform: {
@@ -98,41 +99,6 @@ struct Game_killer: View {
                                                 }
                                                 
                                             })
-                                                /*if check(x: Int(i), y: Int(j)){
-                                                    if command[0] == 1{
-                                                         RoundedRectangle(cornerRadius: 5)
-                                                            .fill(Color.red)
-                                                            .opacity(0.5)
-                                                            .frame(width:screenWidth/10,height: screenWidth/10)
-                                                    }
-                                                    else if command[1] == 1{
-                                                        RoundedRectangle(cornerRadius: 5)
-                                                           .fill(Color.green)
-                                                           .opacity(0.5)
-                                                           .frame(width:screenWidth/10,height: screenWidth/10)
-                                                    }
-                                                    else if command[2] == 1{
-                                                        RoundedRectangle(cornerRadius: 5)
-                                                           .fill(Color.yellow)
-                                                           .opacity(0.5)
-                                                           .frame(width:screenWidth/10,height: screenWidth/10)
-                                                    }
-                                                    else{
-                                                        RoundedRectangle(cornerRadius: 5)
-                                                            .hidden()
-                                                    }
-                                                }
-                                                else {
-                                                    RoundedRectangle(cornerRadius: 5)
-                                                        .hidden()
-                                                }
-
-                                                }*/
-                                            
-                                           // .overlay(
-                                                                                             
-                                            //)
-                                            
                                     }
                                     else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 1{//wall
                                         wall()
@@ -143,12 +109,7 @@ struct Game_killer: View {
                                     else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 3{//main target
                                         
                                     }
-                                   /* Text("\(map[i+kx+index_offset][j+ky+index_offset])")
-                                        .frame(width:screenWidth/10,height: screenWidth/10)
-                                        .onTapGesture(perform: {
-                                            
-                                        })
-                                    */
+                                  
                                 }
                                 
                             }
