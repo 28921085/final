@@ -70,8 +70,39 @@ struct userPage: View {
                             )
                     }
                 }
+                
+                
             }
-            
+            Button{
+                //viewController=5
+            }label:{
+                VStack{
+                    HStack(alignment: .center){
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.green)
+                            .frame(width: 120, height: 60, alignment: .center)
+                            .overlay(
+                                Text("開始匹配")
+                                    .foregroundColor(Color.white)
+                            )
+                    }
+                }
+            }
+            Button{
+                //viewController=5
+            }label:{
+                VStack{
+                    HStack(alignment: .center){
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.red)
+                            .frame(width: 120, height: 60, alignment: .center)
+                            .overlay(
+                                Text("創建房間")
+                                    .foregroundColor(Color.white)
+                            )
+                    }
+                }
+            }
             
         }
         
