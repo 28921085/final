@@ -30,11 +30,47 @@ struct wall: View {
             .frame(width:screenWidth/10,height: screenWidth/10)
     }
 }
+
+struct box: View {
+    //@Binding var type:Int
+   // @State private var fog:Image
+    @State private var screenWidth:CGFloat=UIScreen.main.bounds.width
+    @State private var screenHeight:CGFloat=UIScreen.main.bounds.height
+    var body: some View {
+        
+        ZStack{
+            Image("box")
+                .resizable()
+                .frame(width:screenWidth/10,height: screenWidth/10)
+            Rectangle()
+                .fill(Color.gray)
+                .opacity(0.5)
+                .frame(width:screenWidth/10,height: screenWidth/10)
+        }
+    }
+}
+struct main_target: View {
+    //@Binding var type:Int
+   // @State private var fog:Image
+    @State private var screenWidth:CGFloat=UIScreen.main.bounds.width
+    @State private var screenHeight:CGFloat=UIScreen.main.bounds.height
+    var body: some View {
+        ZStack{
+            Image("main target")
+                .resizable()
+                .frame(width:screenWidth/10,height: screenWidth/10)
+            Rectangle()
+                .fill(Color.gray)
+                .opacity(0.5)
+                .frame(width:screenWidth/10,height: screenWidth/10)
+        }
+        
+    }
+}
 struct Map_view_Previews: PreviewProvider {
-    @State private var t:Int=0
     static var previews: some View {
        
-        wall()
+        box()
             
     }
 }

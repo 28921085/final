@@ -23,10 +23,10 @@
 		26A76E0628465CEB005C1AA8 /* registerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76E0528465CEB005C1AA8 /* registerPage.swift */; };
 		26A76E0828467732005C1AA8 /* userPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76E0728467732005C1AA8 /* userPage.swift */; };
 		26A76E0A284738D3005C1AA8 /* userProfileSettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76E09284738D3005C1AA8 /* userProfileSettingPage.swift */; };
-		26DE93A5285A1F170003F878 /* waitingRoomPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DE93A4285A1F160003F878 /* waitingRoomPage.swift */; };
 		26DE93A7285A1F700003F878 /* Game_killer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DE93A6285A1F700003F878 /* Game_killer.swift */; };
 		26DE93A9285A247E0003F878 /* Game_map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DE93A8285A247E0003F878 /* Game_map.swift */; };
 		26DE93AB285A2E4D0003F878 /* Map_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DE93AA285A2E4D0003F878 /* Map_view.swift */; };
+		26DE93AF285F7AF70003F878 /* waitingRoomPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DE93AE285F7AF70003F878 /* waitingRoomPage.swift */; };
 		26EFCEE1284B9E1700B1E1D8 /* userData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EFCEE0284B9E1700B1E1D8 /* userData.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,10 +64,10 @@
 		26A76E0528465CEB005C1AA8 /* registerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = registerPage.swift; sourceTree = "<group>"; };
 		26A76E0728467732005C1AA8 /* userPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userPage.swift; sourceTree = "<group>"; };
 		26A76E09284738D3005C1AA8 /* userProfileSettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userProfileSettingPage.swift; sourceTree = "<group>"; };
-		26DE93A4285A1F160003F878 /* waitingRoomPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = waitingRoomPage.swift; sourceTree = "<group>"; };
 		26DE93A6285A1F700003F878 /* Game_killer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game_killer.swift; sourceTree = "<group>"; };
 		26DE93A8285A247E0003F878 /* Game_map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game_map.swift; sourceTree = "<group>"; };
 		26DE93AA285A2E4D0003F878 /* Map_view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map_view.swift; sourceTree = "<group>"; };
+		26DE93AE285F7AF70003F878 /* waitingRoomPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = waitingRoomPage.swift; sourceTree = "<group>"; };
 		26EFCEE0284B9E1700B1E1D8 /* userData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -129,9 +129,9 @@
 				26A76E0328465B63005C1AA8 /* startPage.swift */,
 				26A76E09284738D3005C1AA8 /* userProfileSettingPage.swift */,
 				26DE93A8285A247E0003F878 /* Game_map.swift */,
+				26DE93AE285F7AF70003F878 /* waitingRoomPage.swift */,
 				26EFCEE0284B9E1700B1E1D8 /* userData.swift */,
 				26DE93A6285A1F700003F878 /* Game_killer.swift */,
-				26DE93A4285A1F160003F878 /* waitingRoomPage.swift */,
 				26DE93AA285A2E4D0003F878 /* Map_view.swift */,
 				26A76E0728467732005C1AA8 /* userPage.swift */,
 				2687206D284FA28C008EF8EB /* userProfilePage.swift */,
@@ -300,8 +300,8 @@
 				26A76E0628465CEB005C1AA8 /* registerPage.swift in Sources */,
 				26A76DD128451167005C1AA8 /* ContentView.swift in Sources */,
 				26EFCEE1284B9E1700B1E1D8 /* userData.swift in Sources */,
+				26DE93AF285F7AF70003F878 /* waitingRoomPage.swift in Sources */,
 				26DE93A7285A1F700003F878 /* Game_killer.swift in Sources */,
-				26DE93A5285A1F170003F878 /* waitingRoomPage.swift in Sources */,
 				26A76E0428465B63005C1AA8 /* startPage.swift in Sources */,
 				26A76E0A284738D3005C1AA8 /* userProfileSettingPage.swift in Sources */,
 				26A76E0828467732005C1AA8 /* userPage.swift in Sources */,

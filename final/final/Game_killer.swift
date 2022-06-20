@@ -16,11 +16,17 @@ struct Game_killer: View {
     @State private var command:[Int]=[0,0,0]
     @State private var energy:Int=5
     @State private var energyMax:Int=5
+    @State private var HP:Int=10
+    @State private var HPMax:Int=10
     @State private var killerType="♚"
+    @State private var change=["♚","♜","♝","♞"]
+    @State private var changeCount:Int=0
+    @State private var item:Int = 0 //0=empty
     //♙♕
     //♚♜♝♞
     var index_offset=50
     var kingMove:Set<[Int]> = [[1,0],[1,1],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]]
+    var killerSpawnPoint:Set<[Int]> = [[22,12],[22,2],[22,22]]
     func check(x:Int,y:Int)->Bool{
         var tx=x-4
         var ty=y-4
@@ -38,13 +44,25 @@ struct Game_killer: View {
         }
         return false
     }
+    func turnGround(x:Int,y:Int){
+        map[x+index_offset][y+index_offset]=0
+        //return to database
+        
+    }
     var body: some View {
         ZStack{
             Image("fog")
                 .resizable()
                 .scaledToFill()
                 .onAppear(perform: {
-                    map[63][63]=1
+                    //map[63][63]=1
+                    var spawn = killerSpawnPoint.randomElement()
+                    if let tmpx = spawn?[0]{
+                        kx = tmpx
+                    }
+                    if let tmpy = spawn?[1]{
+                        ky = tmpy
+                    }
                     for i in(0...24){//wall
                         map[0+index_offset][i+index_offset]=1
                         map[i+index_offset][0+index_offset]=1
@@ -61,6 +79,39 @@ struct Game_killer: View {
                         map[8+index_offset][25-i+index_offset]=1
                         map[16+index_offset][25-i+index_offset]=1
                     }
+                    for i in(0...2){
+                        map[10+index_offset][12+i+index_offset]=1
+                        map[16+index_offset][12-i+index_offset]=1
+                        map[13-i+index_offset][9+index_offset]=1
+                        map[13+i+index_offset][15+index_offset]=1
+                    }
+                    
+                    map[2+index_offset][7+index_offset]=2
+                    map[7+index_offset][2+index_offset]=2
+                    map[5+index_offset][9+index_offset]=2
+                    map[5+index_offset][15+index_offset]=2
+                    map[2+index_offset][17+index_offset]=2
+                    map[7+index_offset][22+index_offset]=2
+                    map[9+index_offset][5+index_offset]=2
+                    map[15+index_offset][5+index_offset]=2
+                    map[12+index_offset][12+index_offset]=2
+                    map[9+index_offset][19+index_offset]=2
+                    map[15+index_offset][19+index_offset]=2
+                    map[17+index_offset][2+index_offset]=2
+                    map[22+index_offset][7+index_offset]=2
+                    map[19+index_offset][9+index_offset]=2
+                    map[19+index_offset][15+index_offset]=2
+                    map[22+index_offset][17+index_offset]=2
+                    map[17+index_offset][22+index_offset]=2
+                    
+                    map[4+index_offset][4+index_offset]=3
+                    map[3+index_offset][12+index_offset]=3
+                    map[4+index_offset][20+index_offset]=3
+                    map[12+index_offset][3+index_offset]=3
+                    map[12+index_offset][21+index_offset]=3
+                    map[20+index_offset][4+index_offset]=3
+                    map[21+index_offset][12+index_offset]=3
+                    map[20+index_offset][20+index_offset]=3
                 })
             
             VStack{
@@ -88,13 +139,16 @@ struct Game_killer: View {
                                                         //attack
                                                     }
                                                     else if command[1] == 1{
-                                                        print("\(i):\(j)")
+                                                        //print("\(i):\(j)")
                                                         kx += i-4
                                                         ky += j-4
-                                                        energy-=1
+                                                        energy -= 1
                                                     }
                                                     else if command[2] == 1{
                                                         //attackmove
+                                                        kx += i-4
+                                                        ky += j-4
+                                                        energy -= 2
                                                     }
                                                 }
                                                 
@@ -103,11 +157,14 @@ struct Game_killer: View {
                                     else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 1{//wall
                                         wall()
                                     }
-                                    else if map[i+kx+index_offset-8][j+ky+index_offset-8] == 2{//box
-                                        
+                                    else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 2{//box
+                                        box()
+                                            .onTapGesture(perform: {
+                                                
+                                            })
                                     }
                                     else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 3{//main target
-                                        
+                                        main_target()
                                     }
                                   
                                 }
@@ -117,7 +174,15 @@ struct Game_killer: View {
                     }
                 }
                 //Spacer()
-                Spacer()
+                //Spacer()
+                HStack(spacing:3){
+                    Text("❤️")
+                    ForEach(0..<HPMax){e in
+                        Rectangle()
+                            .fill(HP > e ? Color.red : Color.gray)
+                            .frame(width: screenWidth/16, height: 8)
+                    }
+                }
                 HStack{
                     Text("⚡")
                     ForEach(0..<energyMax){e in
@@ -125,6 +190,19 @@ struct Game_killer: View {
                             .fill(energy > e ? Color.yellow : Color.gray)
                             .frame(width: screenWidth/8, height: 8)
                     }
+                }
+                HStack{
+                    Circle() //tool
+                        .stroke(Color.black, lineWidth: 3)
+                        .frame(width: screenWidth/5.8, height:screenWidth/5.8)
+                    Circle() //change
+                        .stroke(Color.black, lineWidth: 3)
+                        .frame(width: screenWidth/5.8, height:screenWidth/5.8)
+                        .overlay(Text("change"))
+                        .onTapGesture(perform: {
+                            changeCount += 1
+                            killerType = change[changeCount % 4]
+                        })
                 }
                 HStack{
                     ZStack{
