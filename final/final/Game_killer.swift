@@ -26,6 +26,8 @@ struct Game_killer: View {
     //♚♜♝♞
     var index_offset=50
     var kingMove:Set<[Int]> = [[1,0],[1,1],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]]
+    var knightMove:Set<[Int]> = [[2,1],[2,-1],[1,2],[1,-2],[-1,2],[-1,-2],[-2,1],[-2,-1]]
+    
     var killerSpawnPoint:Set<[Int]> = [[22,12],[22,2],[22,22]]
     func check(x:Int,y:Int)->Bool{
         var tx=x-4
@@ -34,13 +36,90 @@ struct Game_killer: View {
             return kingMove.contains([tx,ty])
         }
         else if killerType == "♜"{
-            return false
+            if  !(tx == 0 && ty == 0){//!=中心
+                //直線
+                if tx == 0{
+                    if ty > 0{
+                        for i in(1...ty){
+                            if map[kx+index_offset][ky+i+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                    else{
+                        ty *= -1
+                        for i in(1...ty){
+                            if map[kx+index_offset][ky-i+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                    return true
+                }
+                if ty == 0{
+                    if tx > 0{
+                        for i in(1...tx){
+                            if map[kx+i+index_offset][ky+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                    else{
+                        tx *= -1
+                        for i in(1...tx){
+                            if map[kx-i+index_offset][ky+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                    return true
+                }
+            }
         }
         else if killerType == "♝"{
-            return false
+            if  tx != 0 && ty != 0 {//!=中心
+                //直線
+                if abs(tx) != abs(ty){
+                    return false
+                }
+                if tx > 0{
+                    if ty > 0{
+                        for i in(1...ty){
+                            if map[kx+i+index_offset][ky+i+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                    else{
+                        for i in(1...tx){
+                            if map[kx+i+index_offset][ky-i+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                }
+                else{
+                    if ty > 0{
+                        for i in(1...ty){
+                            if map[kx-i+index_offset][ky+i+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                    else{
+                        ty *= -1
+                        for i in(1...ty){
+                            if map[kx-i+index_offset][ky-i+index_offset] == 1{
+                                return false
+                            }
+                        }
+                    }
+                }
+                return true
+            }
         }
         else if killerType == "♞"{
-            return false
+            return knightMove.contains([tx,ty])
         }
         return false
     }
@@ -62,6 +141,18 @@ struct Game_killer: View {
                     }
                     if let tmpy = spawn?[1]{
                         ky = tmpy
+                    }
+                    for i in(0..<100){
+                        for j in(0..<50){
+                            map[j][i]=4
+                            map[i][j]=4
+                        }
+                    }
+                    for i in(0..<100){
+                        for j in(0..<25){
+                            map[99-j][i]=4
+                            map[i][99-j]=4
+                        }
                     }
                     for i in(0...24){//wall
                         map[0+index_offset][i+index_offset]=1
@@ -121,7 +212,11 @@ struct Game_killer: View {
                         HStack(spacing:0){
                             ForEach(0..<9){ j in
                                 if i == 0 || j == 0 || i == 8 || j == 8{
-                                    fog()
+                                    //fog()
+                                    Rectangle()
+                                        .fill(Color.gray)
+                                        .opacity(0.3)
+                                        .frame(width:screenWidth/10,height: screenWidth/10)
                                 }
                                 else{
                                     if map[i+kx+index_offset-4][j+ky+index_offset-4] == 0{//ground
@@ -166,7 +261,9 @@ struct Game_killer: View {
                                     else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 3{//main target
                                         main_target()
                                     }
-                                  
+                                    else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 4{//boundary
+                                        fog()
+                                    }
                                 }
                                 
                             }
