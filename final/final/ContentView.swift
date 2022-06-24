@@ -16,6 +16,7 @@ struct ContentView: View {
         ZStack{
             Image("background")
                 .resizable()
+                .ignoresSafeArea()
                 .scaledToFill()
             switch viewController{
             case 0:

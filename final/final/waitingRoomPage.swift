@@ -16,6 +16,7 @@ struct waitingRoomPage: View {
             Image("fog")
                 .resizable()
                 .scaledToFill()
+                .ignoresSafeArea()
             VStack{
                 HStack{
                     Button{

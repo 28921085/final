@@ -1,41 +1,42 @@
 //
-//  Game_main.swift
+//  Game_human.swift
 //  final
 //
-//  Created by 1+ on 2022/6/15.
+//  Created by 1+ on 2022/6/23.
 //
 
 import SwiftUI
 
-struct Game_killer: View {
+struct Game_human: View {
     @State private var screenWidth:CGFloat=UIScreen.main.bounds.width
     @State private var screenHeight:CGFloat=UIScreen.main.bounds.height
     @State private var map=Array(repeating: Array(repeating: 0, count: 100), count: 100)
-    @State private var kx=12 //offset x,y  = 50,50 map=50-74 (25x25)
-    @State private var ky=12
+    @State private var playerPosition=[[0,0],[0,0],[0,0]]
+    @State private var playerNum=0 // 0=p1 1=p2 2=p3
     @State private var command:[Int]=[0,0,0]
-    @State private var energy:Int=5
+    @State private var energy:Int=3
+    @State private var energyRecovery:Int=3
     @State private var energyMax:Int=5
-    @State private var HP:Int=10
+    @State private var HP:Int=5
     @State private var HPMax:Int=10
-    @State private var killerType="♛"
-    @State private var change=["♛","♜","♝","♞"]
+    @State private var humanType="♙"
+    @State private var change=["♙","♔"]
     @State private var changeCount:Int=0
     @State private var item:Int = 0 //0=empty 1=king 2=castle
     //♙♕
     //♛♜♝♞
     var index_offset=50
-    var kingMove:Set<[Int]> = [[1,0],[1,1],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]]
-    var knightMove:Set<[Int]> = [[2,1],[2,-1],[1,2],[1,-2],[-1,2],[-1,-2],[-2,1],[-2,-1]]
-    
-    var killerSpawnPoint:Set<[Int]> = [[22,12],[22,2],[22,22]]
+    var humanMove:Set<[Int]> = [[1,0],[-1,0],[0,1],[0,-1]]
+    var humanSpawnPoint:Set<[Int]> = [[2,2],[12,2],[22,2],[2,12],[22,12]]
     func check(x:Int,y:Int)->Bool{
-        var tx=x-4
-        var ty=y-4
-        if killerType == "♛"{
-            return kingMove.contains([tx,ty])
+        var tx=x-3
+        var ty=y-3
+        if humanType == "♙"{
+            return humanMove.contains([tx,ty])
         }
-        else if killerType == "♜"{
+        else if humanType == "♔"{
+            var kx = playerPosition[playerNum][0]
+            var ky = playerPosition[playerNum][1]
             if  !(tx == 0 && ty == 0){//!=中心
                 //直線
                 if tx == 0{
@@ -74,11 +75,6 @@ struct Game_killer: View {
                     }
                     return true
                 }
-            }
-        }
-        else if killerType == "♝"{
-            if  tx != 0 && ty != 0 {//!=中心
-                //直線
                 if abs(tx) != abs(ty){
                     return false
                 }
@@ -118,9 +114,6 @@ struct Game_killer: View {
                 return true
             }
         }
-        else if killerType == "♞"{
-            return knightMove.contains([tx,ty])
-        }
         return false
     }
     func turnGround(x:Int,y:Int){
@@ -129,22 +122,16 @@ struct Game_killer: View {
         
     }
     func move(x:Int,y:Int){
-        kx += x
-        ky += y
+        playerPosition[playerNum][0] += x
+        playerPosition[playerNum][1] += y
     }
     func openBox(){
-        var op = Int.random(in: (1...5))
+        var op = Int.random(in: (1...2))
         switch op{
         case 1:
-            HP = min(HP + Int.random(in: 1...3), HPMax)
+            HP = min(HP + Int.random(in: 1...2), HPMax)
         case 2:
-            energy = min(energy + Int.random(in: 1...3), energyMax)
-        case 3:// 1 = king
-            item = 2//castle
-        case 4:
-            item = 3//
-        case 5:
-            item = 4 //knight
+            energy = min(energy + Int.random(in: 1...2), energyMax)
         default:
             break
         }
@@ -157,12 +144,12 @@ struct Game_killer: View {
                 .ignoresSafeArea()
                 .onAppear(perform: {
                     //map[63][63]=1
-                    var spawn = killerSpawnPoint.randomElement()
+                    var spawn = humanSpawnPoint.randomElement()
                     if let tmpx = spawn?[0]{
-                        kx = tmpx
+                        playerPosition[playerNum][0] = tmpx
                     }
                     if let tmpy = spawn?[1]{
-                        ky = tmpy
+                        playerPosition[playerNum][1] = tmpy
                     }
                     map=factory().map
                 })
@@ -170,24 +157,27 @@ struct Game_killer: View {
             VStack{
                 Spacer()
                 VStack(spacing:0){//vision
-                    ForEach(0..<9){ i in
+                    ForEach(0..<7){ i in
                         HStack(spacing:0){
-                            ForEach(0..<9){ j in
-                                if i == 0 || j == 0 || i == 8 || j == 8{
+                            ForEach(0..<7){ j in
+                                var kx = playerPosition[playerNum][0]
+                                var ky = playerPosition[playerNum][1]
+                                var map_data = map[i+kx+index_offset-3][j+ky+index_offset-3]
+                                if i == 0 || j == 0 || i == 6 || j == 6{
                                     //fog()
                                     Rectangle()
                                         .fill(Color.gray)
                                         .opacity(0.3)
-                                        .frame(width:screenWidth/10,height: screenWidth/10)
+                                        .frame(width:screenWidth/7.2,height: screenWidth/7.2)
                                 }
                                 else{
-                                    if map[i+kx+index_offset-4][j+ky+index_offset-4] == 0{//ground
+                                    if map_data == 0{//ground
                                         Rectangle()
                                             .fill(check(x: i, y: j) ? (command[0] == 1 ? Color.red : (command[1] == 1 ? Color.green : (command[2] == 1 ? Color.yellow : Color.gray))) :  Color.gray)
-                                            .frame(width:screenWidth/10,height: screenWidth/10)
+                                            .frame(width:screenWidth/7.2,height: screenWidth/7.2)
                                             .overlay(
-                                                (i == 4 && j == 4) ?
-                                                Text("\(killerType)").font(.system(size:screenWidth/10))
+                                                (i == 3 && j == 3) ?
+                                                Text("\(humanType)").font(.system(size:screenWidth/7.2))
                                                  : Text("")
                                             )
                                             .onTapGesture(perform: {
@@ -197,47 +187,48 @@ struct Game_killer: View {
                                                     }
                                                     else if command[1] == 1{
                                                         //print("\(i):\(j)")
-                                                        move(x: i-4, y: j-4)
+                                                        move(x: i-3, y: j-3)
                                                         energy -= 1
                                                     }
                                                     else if command[2] == 1{
                                                         //attackmove
-                                                        move(x: i-4, y: j-4)
+                                                        move(x: i-3, y: j-3)
                                                         energy -= 2
                                                     }
                                                 }
                                                 
                                             })
                                     }
-                                    else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 1{//wall
-                                        wall()
+                                    else if map_data == 1{//wall
+                                        large_wall()
+                                            
                                     }
-                                    else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 2{//box
+                                    else if map_data == 2{//box
                                         ZStack{
-                                            box()
+                                            large_box()
                                                 .onTapGesture(perform: {
-                                                    turnGround(x: i-4+kx, y: j-4+ky)
-                                                    move(x: i-4, y: j-4)
+                                                    turnGround(x: i-3+kx, y: j-3+ky)
+                                                    move(x: i-3, y: j-3)
                                                     openBox()
                                                 })
                                             Rectangle()
                                                 .fill(check(x: i, y: j) ? (command[0] == 1 ? Color.red : (command[1] == 1 ? Color.green : (command[2] == 1 ? Color.yellow : Color.gray))) :  Color.gray)
                                                 .opacity(0.5)
-                                                .frame(width:screenWidth/10,height: screenWidth/10)
+                                                .frame(width:screenWidth/7.2,height: screenWidth/7.2)
                                         }
                                         
                                     }
-                                    else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 3{//main target
+                                    else if map_data == 3{//main target
                                         ZStack{
-                                            main_target()
+                                            large_main_target()
                                             Rectangle()
                                                 .fill(Color.gray)
                                                 .opacity(0.5)
-                                                .frame(width:screenWidth/10,height: screenWidth/10)
+                                                .frame(width:screenWidth/7.2,height: screenWidth/7.2)
                                         }
                                         
                                     }
-                                    else if map[i+kx+index_offset-4][j+ky+index_offset-4] == 4{//boundary
+                                    else if map_data == 4{//boundary
                                         fog()
                                     }
                                 }
@@ -265,57 +256,47 @@ struct Game_killer: View {
                     }
                 }
                 HStack{
-                    ZStack{
+                    /*ZStack{
                         Circle() //tool
                             .stroke(Color.black, lineWidth: 3)
                             .frame(width: screenWidth/5.8, height:screenWidth/5.8)
                         Text(//♚♜♝♞
                             item == 0 ? "" :
-                                item == 1 ? "♛" :
+                                item == 1 ? "♚" :
                                 item == 2 ? "♜" :
                                 item == 3 ? "♝" : "♞"
                         )
                             .font(.system(size:40))
                             .onTapGesture(perform: {
                                 if item != 0{
-                                    var tmpType = killerType
+                                    var tmpType = humanType
                                     if item == 1{
-                                        killerType = "♛"
+                                        humanType = "♚"
                                     }
                                     else if item == 2{
-                                        killerType = "♜"
+                                        humanType = "♜"
                                     }
-                                    else if item == 3{
-                                        killerType = "♝"
-                                    }
-                                    else if item == 4{
-                                        killerType = "♞"
-                                    }
-                                    if tmpType == "♛"{
+                                    if tmpType == "♚"{
                                         item = 1
                                     }
                                     else if tmpType == "♜"{
                                         item = 2
                                     }
-                                    else if tmpType == "♝"{
-                                        item = 3
-                                    }
-                                    else if tmpType == "♞"{
-                                        item = 4
-                                    }
+                                   
                                 }
                             })
                     }
                     
-                   /* Circle() //change
+                    Circle() //change
                         .stroke(Color.black, lineWidth: 3)
                         .frame(width: screenWidth/5.8, height:screenWidth/5.8)
                         .overlay(Text("change"))
                         .onTapGesture(perform: {
                             changeCount += 1
-                            killerType = change[changeCount % 4]
+                            humanType = change[changeCount % 2]
                         })*/
                 }
+                Spacer()
                 HStack{
                     ZStack{
                         Circle()
@@ -390,8 +371,10 @@ struct Game_killer: View {
     }
 }
 
-struct Game_killer_Previews: PreviewProvider {
+
+
+struct Game_human_Previews: PreviewProvider {
     static var previews: some View {
-        Game_killer()
+        Game_human()
     }
 }
