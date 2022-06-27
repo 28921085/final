@@ -13,12 +13,13 @@ struct ContentView: View {
     @State private var userMail:String=""
     @State private var userdata=userData()
     @State private var roomID = 7201775
+    @State private var whichPlayer = 1
     var body: some View {
         ZStack{
-            Image("background")
+            /*Image("background")
                 .resizable()
                 .ignoresSafeArea()
-                .scaledToFill()
+                .scaledToFill()*/
             switch viewController{
             case 0:
                 startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
@@ -27,13 +28,15 @@ struct ContentView: View {
             case 2:
                 registerPage(viewController: $viewController)
             case 3:
-                userPage(viewController: $viewController,userMail: $userMail,roomID: $roomID)
+                userPage(viewController: $viewController,userMail: $userMail,roomID: $roomID,whichPlayer:$whichPlayer)
             case 4:
                 userProfileSettingPage(viewController: $viewController,userMail: $userMail)
             case 5:
                 userProfilePage(viewController: $viewController)
             case 6:
-                waitingRoomPage(viewController: $viewController,roomID: $roomID)
+                roomHostPage(viewController: $viewController,roomID: $roomID,whichPlayer: $whichPlayer)
+            /*case 7:
+                roomGuestPage(viewController: $viewController,roomID: $roomID)*/
             default:
                 startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
             }

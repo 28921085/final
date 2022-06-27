@@ -128,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				26DE93A8285A247E0003F878 /* Game_map.swift */,
+				265ADA802865E8C500323A64 /* map_on_server.swift */,
 				265ADA882867560500323A64 /* roomInfo.swift */,
 				26EFCEE0284B9E1700B1E1D8 /* userData.swift */,
 			);
@@ -169,7 +170,6 @@
 				26A76DCE28451167005C1AA8 /* finalApp.swift */,
 				26A76DFF2845135C005C1AA8 /* GoogleService-Info.plist */,
 				26A76DD228451169005C1AA8 /* Assets.xcassets */,
-				265ADA802865E8C500323A64 /* map_on_server.swift */,
 				265ADA83286746D400323A64 /* Model */,
 				265ADA822867465900323A64 /* View */,
 				265ADA852867470E00323A64 /* ViewModel */,

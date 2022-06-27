@@ -13,6 +13,8 @@ struct userPage: View {
     @Binding var viewController:Int
     @Binding var userMail:String
     @Binding var roomID:Int
+    @Binding var whichPlayer:Int
+    @State private var roomNum:String=""
     var body: some View {
         VStack{
             HStack{
@@ -78,7 +80,8 @@ struct userPage: View {
                 
             }
             Button{
-                //viewController=5
+                
+                //viewController=6
             }label:{
                 VStack{
                     HStack(alignment: .center){
@@ -92,21 +95,60 @@ struct userPage: View {
                     }
                 }
             }
-            Button{
-                //viewController=5
-            }label:{
-                VStack{
-                    HStack(alignment: .center){
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.green)
-                            .frame(width: 120, height: 60, alignment: .center)
-                            .overlay(
-                                Text("加入房間")
-                                    .foregroundColor(Color.white)
-                            )
+            HStack{
+                TextField("Enter room number", text: $roomNum)
+                    .autocapitalization(.none)
+                Button{
+                    if let user = Auth.auth().currentUser {
+                        roomID = Int(roomNum ?? "1000000")!
+                        Firestore.firestore().collection("rooms").document("\(roomID)").getDocument{
+                            doc1, err1 in
+                            guard let doc1 = doc1,doc1.exists,
+                            var data1 = try? doc1.data(as: roomInfo.self)
+                            else {return}
+                            if data1.player1_ID == ""{
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["player1_ID": user.uid],merge: true)
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["playerCount": data1.playerCount+1],merge: true)
+                                whichPlayer = 1
+                                viewController=6
+                            }
+                            else if data1.player2_ID == ""{
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["player2_ID": user.uid],merge: true)
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["playerCount": data1.playerCount+1],merge: true)
+                                whichPlayer = 2
+                                viewController=6
+                            }
+                            else if data1.player3_ID == ""{
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["player3_ID": user.uid],merge: true)
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["playerCount": data1.playerCount+1],merge: true)
+                                whichPlayer = 3
+                                viewController=6
+                            }
+                            else if data1.player4_ID == ""{
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["player4_ID": user.uid],merge: true)
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["playerCount": data1.playerCount+1],merge: true)
+                                whichPlayer = 4
+                                viewController=6
+                            }
+                        
+                        }
+                        
+                    }
+                }label:{
+                    VStack{
+                        HStack(alignment: .center){
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(Color.green)
+                                .frame(width: 120, height: 60, alignment: .center)
+                                .overlay(
+                                    Text("加入房間")
+                                        .foregroundColor(Color.white)
+                                )
+                        }
                     }
                 }
             }
+            
             Button{
                 if let user = Auth.auth().currentUser {
                     print(user.uid, user.email)
@@ -114,6 +156,9 @@ struct userPage: View {
                     var data = roomInfo()
                     data.id = user.uid
                     data.player1_ID = user.uid
+                    data.playerCount = 1
+                    roomID = data.roomNum
+                    whichPlayer = 1
                     do {
                         let documentReference = try db.collection("rooms").document("\(data.roomNum)").setData(from: data)
                        
@@ -121,7 +166,7 @@ struct userPage: View {
                        print(error)
                    }
                 }
-                
+                viewController = 6
                 
             }label:{
                 VStack{
