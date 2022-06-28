@@ -6,29 +6,39 @@
 //
 
 import SwiftUI
-
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 struct Game_killer: View {
+    @Binding var viewController:Int
+    @Binding var kx:Int
+    @Binding var ky:Int
+    @Binding var playerstate:[playerState]
+    @Binding var game:mapInfo
+    @Binding var roomID:Int
+    @Binding var whichPlayer:Int
     @State private var screenWidth:CGFloat=UIScreen.main.bounds.width
     @State private var screenHeight:CGFloat=UIScreen.main.bounds.height
     @State private var map=Array(repeating: Array(repeating: 0, count: 100), count: 100)
-    @State private var kx=12 //offset x,y  = 50,50 map=50-74 (25x25)
-    @State private var ky=12
+    //@State private var kx=12 //offset x,y  = 50,50 map=50-74 (25x25)
+    //@State private var ky=12
     @State private var command:[Int]=[0,0,0]
     @State private var energy:Int=5
     @State private var energyMax:Int=5
     @State private var HP:Int=10
     @State private var HPMax:Int=10
     @State private var killerType="♛"
-    @State private var change=["♛","♜","♝","♞"]
+    @State private var killer=["♛","♜","♝","♞"]
+    @State private var human=["♙","♕"]
     @State private var changeCount:Int=0
     @State private var item:Int = 0 //0=empty 1=king 2=castle
+    @State private var refresh:Timer?
     //♙♕
     //♛♜♝♞
     var index_offset=50
     var kingMove:Set<[Int]> = [[1,0],[1,1],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]]
     var knightMove:Set<[Int]> = [[2,1],[2,-1],[1,2],[1,-2],[-1,2],[-1,-2],[-2,1],[-2,-1]]
-    
-    var killerSpawnPoint:Set<[Int]> = [[22,12],[22,2],[22,22]]
+    var all_boxes = [[7,2],[2,7],[5,9],[5,15],[2,17],[7,22],[9,5],[15,5],[12,12],[9,19],[15,19],[17,2],[22,7],[19,9],[19,15],[22,17],[17,22]]
+    var all_main_target = [[4,4],[3,12],[4,20],[12,3],[12,21],[20,4],[21,12],[20,20]]
     func check(x:Int,y:Int)->Bool{
         var tx=x-4
         var ty=y-4
@@ -129,16 +139,20 @@ struct Game_killer: View {
         
     }
     func move(x:Int,y:Int){
-        kx += x
-        ky += y
+        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["x":kx+x],merge:true)
+        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["y":ky+y],merge:true)
+        //kx += x
+        //ky += y
     }
     func openBox(){
         var op = Int.random(in: (1...5))
         switch op{
         case 1:
-            HP = min(HP + Int.random(in: 1...3), HPMax)
+            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["HP":min(HP + Int.random(in: 1...3), HPMax)],merge:true)
+            //HP = min(HP + Int.random(in: 1...3), HPMax)
         case 2:
-            energy = min(energy + Int.random(in: 1...3), energyMax)
+            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["energy":min(energy + Int.random(in: 1...3), energyMax)],merge:true)
+            //energy = min(energy + Int.random(in: 1...3), energyMax)
         case 3:// 1 = king
             item = 2//castle
         case 4:
@@ -156,15 +170,40 @@ struct Game_killer: View {
                 .scaledToFill()
                 .ignoresSafeArea()
                 .onAppear(perform: {
-                    //map[63][63]=1
-                    var spawn = killerSpawnPoint.randomElement()
-                    if let tmpx = spawn?[0]{
-                        kx = tmpx
-                    }
-                    if let tmpy = spawn?[1]{
-                        ky = tmpy
-                    }
                     map=factory().map
+                    refresh = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true){ t in
+                        Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").getDocument { document, error in
+                            guard let document = document,document.exists,
+                            var data = try? document.data(as: mapInfo.self)
+                            else {return}
+                            game = data
+                        }
+                        for i in(0...3){
+                            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(i+1)").getDocument{
+                                doc1, err1 in
+                                guard let doc1 = doc1,doc1.exists,
+                                var data1 = try? doc1.data(as: playerState.self)
+                                else {return}
+                                playerstate[i] = data1
+                            }
+                        }
+                        
+                        for i in(0..<17){
+                            if game.boxOpened[i] == 1{
+                                turnGround(x: all_boxes[i][0], y: all_boxes[i][1])
+                            }
+                        }
+                        for i in(0..<8){
+                            if game.mainTargetOpened[i] == 1{
+                                turnGround(x: all_main_target[i][0], y: all_main_target[i][1])
+                            }
+                        }
+                        killerType = killer[playerstate[0].role]
+                        HP = playerstate[0].HP
+                        energy = playerstate[0].energy
+                        kx = playerstate[0].x
+                        ky = playerstate[0].y
+                    }
                 })
             
             VStack{
@@ -186,24 +225,41 @@ struct Game_killer: View {
                                             .fill(check(x: i, y: j) ? (command[0] == 1 ? Color.red : (command[1] == 1 ? Color.green : (command[2] == 1 ? Color.yellow : Color.gray))) :  Color.gray)
                                             .frame(width:screenWidth/10,height: screenWidth/10)
                                             .overlay(
-                                                (i == 4 && j == 4) ?
+                                                ZStack{
+                                                    if i == 4 && j == 4{
+                                                        Text("\(killerType)").font(.system(size:screenWidth/10))
+                                                    }
+                                                    if playerstate[1].x-kx == i-4 && playerstate[1].y-ky == j-4{
+                                                        Text("\(human[playerstate[1].role])").font(.system(size:screenWidth/10))
+                                                    }
+                                                    if playerstate[2].x-kx == i-4 && playerstate[2].y-ky == j-4{
+                                                        Text("\(human[playerstate[2].role])").font(.system(size:screenWidth/10))
+                                                    }
+                                                    if playerstate[3].x-kx == i-4 && playerstate[3].y-ky == j-4{
+                                                        Text("\(human[playerstate[3].role])").font(.system(size:screenWidth/10))
+                                                    }
+                                                }
+                                                
+                                                /*(i == 4 && j == 4) ?
                                                 Text("\(killerType)").font(.system(size:screenWidth/10))
-                                                 : Text("")
+                                                 : Text("")*/
                                             )
                                             .onTapGesture(perform: {
                                                 if check(x: i, y: j){
                                                     if command[0] == 1{
                                                         //attack
+                                                        command[0]=0
                                                     }
                                                     else if command[1] == 1{
-                                                        //print("\(i):\(j)")
                                                         move(x: i-4, y: j-4)
-                                                        energy -= 1
+                                                        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["energy":energy-1],merge:true)
+                                                        command[1]=0
                                                     }
                                                     else if command[2] == 1{
                                                         //attackmove
                                                         move(x: i-4, y: j-4)
-                                                        energy -= 2
+                                                        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["energy":energy-2],merge:true)
+                                                        command[2]=0
                                                     }
                                                 }
                                                 
@@ -216,9 +272,40 @@ struct Game_killer: View {
                                         ZStack{
                                             box()
                                                 .onTapGesture(perform: {
-                                                    turnGround(x: i-4+kx, y: j-4+ky)
-                                                    move(x: i-4, y: j-4)
-                                                    openBox()
+                                                    if check(x: i, y: j){
+                                                        if command[1] == 1{//move
+                                                            var tmp = game.boxOpened
+                                                            var pair = [i+kx-4,j+ky-4]
+                                                            for p in (0..<17){
+                                                                if all_boxes[p] == pair{
+                                                                    tmp[p] = 1
+                                                                }
+                                                            }
+                                                            Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["boxOpened":tmp],merge:true)
+                                                            //turnGround(x: i-4+kx, y: j-4+ky)
+                                                            move(x: i-4, y: j-4)
+                                                            openBox()
+                                                            command[1] = 0
+                                                        }
+                                                        else if command[2] == 1{//attackmove
+                                                            //move
+                                                            var tmp = game.boxOpened
+                                                            var pair = [i+kx-4,j+ky-4]
+                                                            for p in (0..<17){
+                                                                if all_boxes[p] == pair{
+                                                                    tmp[p] = 1
+                                                                }
+                                                            }
+                                                            Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["boxOpened":tmp],merge:true)
+                                                            //turnGround(x: i-4+kx, y: j-4+ky)
+                                                            move(x: i-4, y: j-4)
+                                                            openBox()
+                                                            
+                                                            //attack
+                                                            command[2]=0
+                                                        }
+                                                    }
+                                                    
                                                 })
                                             Rectangle()
                                                 .fill(check(x: i, y: j) ? (command[0] == 1 ? Color.red : (command[1] == 1 ? Color.green : (command[2] == 1 ? Color.yellow : Color.gray))) :  Color.gray)
@@ -278,18 +365,23 @@ struct Game_killer: View {
                             .font(.system(size:40))
                             .onTapGesture(perform: {
                                 if item != 0{
+                                    
                                     var tmpType = killerType
                                     if item == 1{
-                                        killerType = "♛"
+                                        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["role":0],merge:true)
+                                        //killerType = "♛"
                                     }
                                     else if item == 2{
-                                        killerType = "♜"
+                                        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["role":1],merge:true)
+                                        //killerType = "♜"
                                     }
                                     else if item == 3{
-                                        killerType = "♝"
+                                        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["role":2],merge:true)
+                                        //killerType = "♝"
                                     }
                                     else if item == 4{
-                                        killerType = "♞"
+                                        Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["role":3],merge:true)
+                                        //killerType = "♞"
                                     }
                                     if tmpType == "♛"{
                                         item = 1
@@ -331,7 +423,7 @@ struct Game_killer: View {
                                 }
                             )
                             .onTapGesture {
-                                if command[1] == 0 && command[2] == 0{
+                                if command[1] == 0 && command[2] == 0 && energy >= 1{
                                     command[0] ^= 1
                                     
                                 }
@@ -351,7 +443,7 @@ struct Game_killer: View {
                                 }
                             )
                             .onTapGesture {
-                                if command[0] == 0 && command[2] == 0{
+                                if command[0] == 0 && command[2] == 0 && energy >= 1{
                                     command[1] ^= 1
                                     
                                 }
@@ -372,7 +464,7 @@ struct Game_killer: View {
                                 }
                             )
                             .onTapGesture {
-                                if command[1] == 0 && command[0] == 0{
+                                if command[1] == 0 && command[0] == 0 && energy >= 2{
                                     command[2] ^= 1
                                     
                                 }
@@ -389,9 +481,10 @@ struct Game_killer: View {
         
     }
 }
-
+/*
 struct Game_killer_Previews: PreviewProvider {
     static var previews: some View {
         Game_killer()
     }
 }
+*/

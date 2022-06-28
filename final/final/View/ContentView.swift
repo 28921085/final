@@ -12,8 +12,12 @@ struct ContentView: View {
     @State private var viewController:Int=0
     @State private var userMail:String=""
     @State private var userdata=userData()
+    @State private var game=mapInfo()
+    @State private var playerstate=[playerState(),playerState(),playerState(),playerState()]
     @State private var roomID = 7201775
     @State private var whichPlayer = 1
+    @State private var posX = 0
+    @State private var posY = 0
     var body: some View {
         ZStack{
             /*Image("background")
@@ -22,21 +26,59 @@ struct ContentView: View {
                 .scaledToFill()*/
             switch viewController{
             case 0:
-                startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
+                ZStack{
+                    Image("background")
+                        .resizable()
+                        .ignoresSafeArea()
+                        .scaledToFill()
+                    startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
+                }
+                
             case 1:
-                loginPage(viewController: $viewController,userMail: $userMail)
+                ZStack{
+                    Image("background")
+                        .resizable()
+                        .ignoresSafeArea()
+                        .scaledToFill()
+                    loginPage(viewController: $viewController,userMail: $userMail)
+                }
+                
             case 2:
-                registerPage(viewController: $viewController)
+                ZStack{
+                    Image("background")
+                        .resizable()
+                        .ignoresSafeArea()
+                        .scaledToFill()
+                    registerPage(viewController: $viewController)
+                }
+                
             case 3:
-                userPage(viewController: $viewController,userMail: $userMail,roomID: $roomID,whichPlayer:$whichPlayer)
+                ZStack{
+                    Image("background")
+                        .resizable()
+                        .ignoresSafeArea()
+                        .scaledToFill()
+                    userPage(viewController: $viewController,userMail: $userMail,roomID: $roomID,whichPlayer:$whichPlayer)
+                }
+                
             case 4:
+                
                 userProfileSettingPage(viewController: $viewController,userMail: $userMail)
             case 5:
-                userProfilePage(viewController: $viewController)
+                ZStack{
+                    Image("background")
+                        .resizable()
+                        .ignoresSafeArea()
+                        .scaledToFill()
+                    userProfilePage(viewController: $viewController)
+                }
+                
             case 6:
-                roomHostPage(viewController: $viewController,roomID: $roomID,whichPlayer: $whichPlayer)
-            /*case 7:
-                roomGuestPage(viewController: $viewController,roomID: $roomID)*/
+                roomHostPage(viewController: $viewController,roomID: $roomID,whichPlayer: $whichPlayer,kx:$posX,ky:$posY)
+            case 7:
+                Game_killer(viewController: $viewController,kx:$posX,ky:$posY,playerstate:$playerstate,game:$game,roomID: $roomID,whichPlayer: $whichPlayer)
+            case 8:
+                Game_human(viewController: $viewController,kx:$posX,ky:$posY,playerstate:$playerstate,game:$game,roomID: $roomID,whichPlayer: $whichPlayer)
             default:
                 startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
             }

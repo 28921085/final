@@ -14,7 +14,9 @@ struct roomHostPage: View {
     @Binding var viewController:Int
     @Binding var roomID:Int
     @Binding var whichPlayer:Int
-    @State private var ready=[0,0,0,0]
+    @Binding var kx:Int
+    @Binding var ky:Int
+    //@State private var ready=[0,0,0,0]
     @State private var type=[0,1,1,1]
     @State private var change = false
     @State private var refresh:Timer?
@@ -91,18 +93,111 @@ struct roomHostPage: View {
                             }
                         }
                         if room.game_start{
-                            if whichPlayer == 1{
-                                
+                            if true/*factory*/{
+                                var killerSpawnPoint:Set<[Int]> = [[22,12],[22,2],[22,22]]
+                                var humanSpawnPoint:Set<[Int]> = [[2,2],[12,2],[2,22],[2,12],[12,22]]
+                                if whichPlayer == 1{
+                                    //player
+                                    var data = playerState()
+                                    var spawn = killerSpawnPoint.randomElement()
+                                    if let tmpx = spawn?[0]{
+                                        kx = tmpx
+                                    }
+                                    if let tmpy = spawn?[1]{
+                                        ky = tmpy
+                                    }
+                                    data.x=kx
+                                    data.y=ky
+                                    data.HP=10
+                                    data.energy=5
+                                    data.energyRecovery=5
+                                    data.id=player1.id
+                                    data.isDead=false
+                                    do{
+                                        try Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(from: data)
+                                    }catch{
+                                        print(error)
+                                    }
+                                    //map
+                                    var map = mapInfo()
+                                    map.id=player1.id
+                                    do{
+                                        try Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(from: map)
+                                    }catch{
+                                        print(error)
+                                    }
+                                    
+                                    viewController = 7
+                                }
+                                else if whichPlayer == 2{
+                                    //player
+                                    var data = playerState()
+                                    var spawn = humanSpawnPoint.randomElement()
+                                    if let tmpx = spawn?[0]{
+                                        kx = tmpx
+                                    }
+                                    if let tmpy = spawn?[1]{
+                                        ky = tmpy
+                                    }
+                                    data.x=kx
+                                    data.y=ky
+                                    data.id=player2.id
+                                    data.isDead=false
+                                    do{
+                                        try Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p2").setData(from: data)
+                                    }catch{
+                                        print(error)
+                                    }
+                                    viewController = 8
+                                }
+                                else if whichPlayer == 3{
+                                    //player
+                                    var data = playerState()
+                                    var spawn = humanSpawnPoint.randomElement()
+                                    if let tmpx = spawn?[0]{
+                                        kx = tmpx
+                                    }
+                                    if let tmpy = spawn?[1]{
+                                        ky = tmpy
+                                    }
+                                    data.x=kx
+                                    data.y=ky
+                                    data.id=player3.id
+                                    data.isDead=false
+                                    do{
+                                        try Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p3").setData(from: data)
+                                    }catch{
+                                        print(error)
+                                    }
+                                    viewController = 8
+                                }
+                                else if whichPlayer == 4{
+                                    //player
+                                    var data = playerState()
+                                    var spawn = humanSpawnPoint.randomElement()
+                                    if let tmpx = spawn?[0]{
+                                        kx = tmpx
+                                    }
+                                    if let tmpy = spawn?[1]{
+                                        ky = tmpy
+                                    }
+                                    data.x=kx
+                                    data.y=ky
+                                    data.id=player4.id
+                                    data.isDead=false
+                                    do{
+                                        try Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p4").setData(from: data)
+                                    }catch{
+                                        print(error)
+                                    }
+                                    viewController = 8
+                                }
+                                else{//map puzzle
+                                    
+                                }
+                                t.invalidate()
                             }
-                            else if whichPlayer == 2{
-                                
-                            }
-                            else if whichPlayer == 3{
-                                
-                            }
-                            else if whichPlayer == 4{
-                                
-                            }
+                            
                             
                         }
                     }
@@ -180,6 +275,9 @@ struct roomHostPage: View {
                             if room.p1ready && room.p2ready && room.p3ready && room.p4ready{
                                 Firestore.firestore().collection("rooms").document("\(roomID)").setData(["game_start": true],merge: true)
                             }
+                            else if room.p1ready && room.p2ready && room.playerCount == 2{//debug
+                                Firestore.firestore().collection("rooms").document("\(roomID)").setData(["game_start": true],merge: true)
+                            }
                             
                         }label:{
                             HStack(alignment: .center){
@@ -210,7 +308,7 @@ struct roomHostPage: View {
         }
     }
 }
-
+/*
 struct test1: View {
     @State private var viewController = 6
     @State private var roomID = 7201775
@@ -224,3 +322,4 @@ struct waitingRoomPage_Previews: PreviewProvider {
         test1()
     }
 }
+*/

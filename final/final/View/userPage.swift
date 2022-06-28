@@ -96,8 +96,10 @@ struct userPage: View {
                 }
             }
             HStack{
+                Spacer()
                 TextField("Enter room number", text: $roomNum)
                     .autocapitalization(.none)
+                    .frame(width: 120, height:30 )
                 Button{
                     if let user = Auth.auth().currentUser {
                         roomID = Int(roomNum ?? "1000000")!
@@ -147,6 +149,7 @@ struct userPage: View {
                         }
                     }
                 }
+                Spacer()
             }
             
             Button{
