@@ -12,6 +12,10 @@
 		265ADA872867476200323A64 /* room_model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265ADA862867476200323A64 /* room_model.swift */; };
 		265ADA892867560500323A64 /* roomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265ADA882867560500323A64 /* roomInfo.swift */; };
 		2687206E284FA28C008EF8EB /* userProfilePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2687206D284FA28C008EF8EB /* userProfilePage.swift */; };
+		269660CB286D8999005F7D29 /* SettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269660CA286D8999005F7D29 /* SettingPage.swift */; };
+		269660CD286D9A92005F7D29 /* atk.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 269660CC286D9A91005F7D29 /* atk.mp3 */; };
+		269660CF286D9AA0005F7D29 /* move.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 269660CE286D9AA0005F7D29 /* move.mp3 */; };
+		269660D1286D9AA5005F7D29 /* bgm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 269660D0286D9AA5005F7D29 /* bgm.mp3 */; };
 		26A76DCF28451167005C1AA8 /* finalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76DCE28451167005C1AA8 /* finalApp.swift */; };
 		26A76DD128451167005C1AA8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A76DD028451167005C1AA8 /* ContentView.swift */; };
 		26A76DD328451169005C1AA8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A76DD228451169005C1AA8 /* Assets.xcassets */; };
@@ -57,6 +61,10 @@
 		265ADA862867476200323A64 /* room_model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = room_model.swift; sourceTree = "<group>"; };
 		265ADA882867560500323A64 /* roomInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = roomInfo.swift; sourceTree = "<group>"; };
 		2687206D284FA28C008EF8EB /* userProfilePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = userProfilePage.swift; sourceTree = "<group>"; };
+		269660CA286D8999005F7D29 /* SettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingPage.swift; sourceTree = "<group>"; };
+		269660CC286D9A91005F7D29 /* atk.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = atk.mp3; sourceTree = "<group>"; };
+		269660CE286D9AA0005F7D29 /* move.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = move.mp3; sourceTree = "<group>"; };
+		269660D0286D9AA5005F7D29 /* bgm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm.mp3; sourceTree = "<group>"; };
 		26A76DCB28451167005C1AA8 /* final.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = final.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A76DCE28451167005C1AA8 /* finalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = finalApp.swift; sourceTree = "<group>"; };
 		26A76DD028451167005C1AA8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -114,6 +122,7 @@
 				26A76E0328465B63005C1AA8 /* startPage.swift */,
 				26A76E0528465CEB005C1AA8 /* registerPage.swift */,
 				26A76E0728467732005C1AA8 /* userPage.swift */,
+				269660CA286D8999005F7D29 /* SettingPage.swift */,
 				26DE93AE285F7AF70003F878 /* waitingRoomPage.swift */,
 				2687206D284FA28C008EF8EB /* userProfilePage.swift */,
 				26A76E09284738D3005C1AA8 /* userProfileSettingPage.swift */,
@@ -169,6 +178,9 @@
 			children = (
 				26A76DCE28451167005C1AA8 /* finalApp.swift */,
 				26A76DFF2845135C005C1AA8 /* GoogleService-Info.plist */,
+				269660D0286D9AA5005F7D29 /* bgm.mp3 */,
+				269660CE286D9AA0005F7D29 /* move.mp3 */,
+				269660CC286D9A91005F7D29 /* atk.mp3 */,
 				26A76DD228451169005C1AA8 /* Assets.xcassets */,
 				265ADA83286746D400323A64 /* Model */,
 				265ADA822867465900323A64 /* View */,
@@ -306,8 +318,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				269660CD286D9A92005F7D29 /* atk.mp3 in Resources */,
+				269660CF286D9AA0005F7D29 /* move.mp3 in Resources */,
 				26A76DD328451169005C1AA8 /* Assets.xcassets in Resources */,
 				26A76E002845135C005C1AA8 /* GoogleService-Info.plist in Resources */,
+				269660D1286D9AA5005F7D29 /* bgm.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,6 +358,7 @@
 				26A76E0428465B63005C1AA8 /* startPage.swift in Sources */,
 				265ADA872867476200323A64 /* room_model.swift in Sources */,
 				265ADA812865E8C500323A64 /* map_on_server.swift in Sources */,
+				269660CB286D8999005F7D29 /* SettingPage.swift in Sources */,
 				26A76E0A284738D3005C1AA8 /* userProfileSettingPage.swift in Sources */,
 				26A76E0828467732005C1AA8 /* userPage.swift in Sources */,
 				2687206E284FA28C008EF8EB /* userProfilePage.swift in Sources */,

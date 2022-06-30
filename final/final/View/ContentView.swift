@@ -18,6 +18,7 @@ struct ContentView: View {
     @State private var whichPlayer = 1
     @State private var posX = 0
     @State private var posY = 0
+    @State private var language = "English"
     var body: some View {
         ZStack{
             /*Image("background")
@@ -58,7 +59,7 @@ struct ContentView: View {
                         .resizable()
                         .ignoresSafeArea()
                         .scaledToFill()
-                    userPage(viewController: $viewController,userMail: $userMail,roomID: $roomID,whichPlayer:$whichPlayer)
+                    userPage(viewController: $viewController,userMail: $userMail,roomID: $roomID,whichPlayer:$whichPlayer,language: $language)
                 }
                 
             case 4:
@@ -74,11 +75,19 @@ struct ContentView: View {
                 }
                 
             case 6:
-                roomHostPage(viewController: $viewController,roomID: $roomID,whichPlayer: $whichPlayer,kx:$posX,ky:$posY)
+                roomHostPage(viewController: $viewController,roomID: $roomID,whichPlayer: $whichPlayer,kx:$posX,ky:$posY,language: $language)
             case 7:
-                Game_killer(viewController: $viewController,kx:$posX,ky:$posY,playerstate:$playerstate,game:$game,roomID: $roomID,whichPlayer: $whichPlayer)
+                Game_killer(viewController: $viewController,kx:$posX,ky:$posY,playerstate:$playerstate,game:$game,roomID: $roomID,whichPlayer: $whichPlayer,language: $language)
             case 8:
-                Game_human(viewController: $viewController,kx:$posX,ky:$posY,playerstate:$playerstate,game:$game,roomID: $roomID,whichPlayer: $whichPlayer)
+                Game_human(viewController: $viewController,kx:$posX,ky:$posY,playerstate:$playerstate,game:$game,roomID: $roomID,whichPlayer: $whichPlayer,language: $language)
+            case 9:
+                ZStack{
+                    Image("background")
+                        .resizable()
+                        .ignoresSafeArea()
+                        .scaledToFill()
+                    SettingPage(language: $language, viewController: $viewController)
+                }
             default:
                 startPage(viewController: $viewController,userMail: $userMail,userData: $userdata)
             }

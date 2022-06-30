@@ -16,6 +16,7 @@ struct roomHostPage: View {
     @Binding var whichPlayer:Int
     @Binding var kx:Int
     @Binding var ky:Int
+    @Binding var language:String
     //@State private var ready=[0,0,0,0]
     @State private var type=[0,1,1,1]
     @State private var change = false
@@ -238,7 +239,7 @@ struct roomHostPage: View {
                                 .fill(Color.blue)
                                 .frame(width: 70, height: 30, alignment: .center)
                                 .overlay(
-                                    Text("back")
+                                    Text(language == "English" ? "back" : "返回")
                                         .foregroundColor(Color.white)
                                 )
                         }
@@ -264,7 +265,7 @@ struct roomHostPage: View {
                                 .fill(Color.blue)
                                 .frame(width: 70, height: 30, alignment: .center)
                                 .overlay(
-                                    Text("ready")
+                                    Text(language == "English" ? "ready" : "準備")
                                         .foregroundColor(Color.white)
                                 )
                         }
@@ -285,24 +286,24 @@ struct roomHostPage: View {
                                     .fill(Color.blue)
                                     .frame(width: 70, height: 30, alignment: .center)
                                     .overlay(
-                                        Text("start")
+                                        Text(language == "English" ? "start" : "開始")
                                             .foregroundColor(Color.white)
                                     )
                             }
                         }
                     }
-                    Text("room : \(roomID)")
+                    Text(language == "English" ? "room : \(roomID)" : "房間 : \(roomID)")
                         .foregroundColor(Color.green)
                 }
                 HStack{
-                    playerInfo(type: $type[0],ready: $room.p1ready,name:$player1.name,photoURL: $player1.photoURL)
+                    playerInfo(type: $type[0],ready: $room.p1ready,name:$player1.name,photoURL: $player1.photoURL,language: $language)
                         
-                    playerInfo(type: $type[1],ready: $room.p2ready,name:$player2.name,photoURL: $player2.photoURL)
+                    playerInfo(type: $type[1],ready: $room.p2ready,name:$player2.name,photoURL: $player2.photoURL,language: $language)
                 }
                 
                 HStack{
-                    playerInfo(type: $type[2],ready: $room.p3ready,name:$player3.name,photoURL: $player3.photoURL)
-                    playerInfo(type: $type[3],ready: $room.p4ready,name:$player4.name,photoURL: $player4.photoURL)
+                    playerInfo(type: $type[2],ready: $room.p3ready,name:$player3.name,photoURL: $player3.photoURL,language: $language)
+                    playerInfo(type: $type[3],ready: $room.p4ready,name:$player4.name,photoURL: $player4.photoURL,language: $language)
                 }
             }
         }

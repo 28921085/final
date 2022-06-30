@@ -8,6 +8,7 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import AVFoundation
 struct Game_human: View {
     @Binding var viewController:Int
     @Binding var kx:Int
@@ -16,6 +17,7 @@ struct Game_human: View {
     @Binding var game:mapInfo
     @Binding var roomID:Int
     @Binding var whichPlayer:Int
+    @Binding var language:String
     @State private var screenWidth:CGFloat=UIScreen.main.bounds.width
     @State private var screenHeight:CGFloat=UIScreen.main.bounds.height
     @State private var map=Array(repeating: Array(repeating: 0, count: 100), count: 100)
@@ -29,13 +31,19 @@ struct Game_human: View {
     @State private var HPMax:Int=10
     @State private var humanType="♙"
     @State private var killer=["♛","♜","♝","♞"]
-    @State private var human=["♙","♕"]
+    @State private var human=["♙","♔"]
     @State private var changeCount:Int=0
     @State private var item:Int = 0 //
     @State private var main_target_count=0
     @State private var refresh:Timer?
+    @State private var alertTitle=""
+    @State private var isPresented=false
+    @State private var count=0
     //♙♕
     //♛♜♝♞
+    let moveSound = AVPlayer()
+    let atkSound = AVPlayer()
+    let bgm = AVPlayer()
     var index_offset=50
     var humanMove:Set<[Int]> = [[1,0],[-1,0],[0,1],[0,-1]]
     var all_boxes = [[7,2],[2,7],[5,9],[5,15],[2,17],[7,22],[9,5],[15,5],[12,12],[9,19],[15,19],[17,2],[22,7],[19,9],[19,15],[22,17],[17,22]]
@@ -136,6 +144,10 @@ struct Game_human: View {
     func move(x:Int,y:Int){
         Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["x":kx+x],merge:true)
         Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["y":ky+y],merge:true)
+        let fileUrl = Bundle.main.url(forResource: "move", withExtension: "mp3")!
+        let playerItem = AVPlayerItem(url: fileUrl)
+        self.moveSound.replaceCurrentItem(with: playerItem)
+        self.moveSound.play()
         //kx += x
         //ky += y
     }
@@ -152,21 +164,67 @@ struct Game_human: View {
             break
         }
     }
+    func whoIsNext()->Int{
+        var tmp = whichPlayer
+        var turn=[0,1,2,3,4,1,2,3,4]
+        for i in(1...3){
+            if !playerstate[turn[whichPlayer + i]-1].isDead{
+                return turn[whichPlayer + i]
+            }
+        }
+        return whichPlayer
+    }
+    func attack(x:Int,y:Int){//♙♕
+        var atkRange:Set<[Int]> = [[1,0],[1,1],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1],[0,0]]
+        var p1pos = [playerstate[0].x,playerstate[0].y]
+        var pos = [playerstate[whichPlayer].x,playerstate[whichPlayer].y]
+        let fileUrl = Bundle.main.url(forResource: "atk", withExtension: "mp3")!
+        let playerItem = AVPlayerItem(url: fileUrl)
+        self.atkSound.replaceCurrentItem(with: playerItem)
+        self.atkSound.play()
+        var atk = 0
+        if humanType == "♙"{
+            atk=1
+        }
+        else if humanType == "♕"{
+            atk=2
+        }
+        p1pos[0]-=pos[0]
+        p1pos[1]-=pos[1]
+        if atkRange.contains(p1pos){
+            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p1").setData(["HP":playerstate[0].HP-atk],merge:true)
+        }
+        
+    }
     var body: some View {
         ZStack{
             Image("fog")
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea()
+                .alert(alertTitle, isPresented: $isPresented, actions: {
+                    Button("OK"){
+                        Firestore.firestore().collection("userdatas").document("\(playerstate[whichPlayer-1].id)").getDocument { document, error in
+                            guard let document = document,document.exists,
+                            var data = try? document.data(as: userData.self)
+                            else {return}
+                            Firestore.firestore().collection("userdatas").document("\(playerstate[whichPlayer-1].id)").setData(["coin":data.coin+500],merge:true)
+                        }
+                        
+                        
+                        viewController = 3
+                    }
+                })
                 .onAppear(perform: {
                     map=factory().map
                     refresh = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true){ t in
-                        Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").getDocument { document, error in
-                            guard let document = document,document.exists,
-                            var data = try? document.data(as: mapInfo.self)
-                            else {return}
-                            game = data
+                        if count % 220 == 0{//loop
+                            let fileUrl = Bundle.main.url(forResource: "bgm", withExtension: "mp3")!
+                            let playerItem = AVPlayerItem(url: fileUrl)
+                            self.bgm.replaceCurrentItem(with: playerItem)
+                            self.bgm.play()
                         }
+                        count += 1
                         
                         for i in(0...3){
                             Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(i+1)").getDocument{
@@ -176,6 +234,17 @@ struct Game_human: View {
                                 else {return}
                                 playerstate[i] = data1
                             }
+                        }
+                        Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").getDocument { document, error in
+                            guard let document = document,document.exists,
+                            var data = try? document.data(as: mapInfo.self)
+                            else {return}
+                            if game.turnToWho != data.turnToWho && data.turnToWho == whichPlayer{
+                                //sound
+                                
+                                Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["energy":min(energyMax,energy + playerstate[whichPlayer-1].energyRecovery)],merge:true)
+                            }
+                            game = data
                         }
                         for i in(0..<17){
                             if game.boxOpened[i] == 1{
@@ -192,6 +261,17 @@ struct Game_human: View {
                         energy = playerstate[whichPlayer-1].energy
                         kx = playerstate[whichPlayer-1].x
                         ky = playerstate[whichPlayer-1].y
+                        if playerstate[1].isDead && playerstate[2].isDead && playerstate[3].isDead && count > 10{
+                            Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["gameOver":1],merge:true)
+                        }
+                        if game.gameOver == 1{
+                            isPresented=true
+                            alertTitle="killer win"
+                        }
+                        else if game.gameOver == 2{
+                            isPresented=true
+                            alertTitle="human win"
+                        }
                     }
                     
                     
@@ -281,6 +361,7 @@ struct Game_human: View {
                                                             //turnGround(x: i-4+kx, y: j-4+ky)
                                                             move(x: i-3, y: j-3)
                                                             openBox()
+                                                            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["energy":energy-1],merge:true)
                                                             command[1]=0
                                                         }
                                                         else if command[2] == 1{//attackmove
@@ -296,6 +377,7 @@ struct Game_human: View {
                                                             //turnGround(x: i-4+kx, y: j-4+ky)
                                                             move(x: i-3, y: j-3)
                                                             openBox()
+                                                            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["energy":energy-2],merge:true)
                                                             //attack
                                                             command[2]=0
                                                         }
@@ -325,6 +407,7 @@ struct Game_human: View {
                                                             }
                                                             Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["mainTargetOpened":tmp],merge:true)
                                                             move(x:i-3,y:j-3)
+                                                            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["energy":energy-1],merge:true)
                                                             command[1]=0
                                                         }
                                                         else if command[2] == 1{
@@ -337,6 +420,7 @@ struct Game_human: View {
                                                                 }
                                                             }
                                                             Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["mainTargetOpened":tmp],merge:true)
+                                                            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["energy":energy-2],merge:true)
                                                             move(x:i-3,y:j-3)
                                                             command[2]=0
                                                         }
@@ -346,7 +430,7 @@ struct Game_human: View {
                                                     }
                                                 })
                                             Rectangle()
-                                                .fill(Color.gray)
+                                                .fill(check(x: i, y: j) ? (command[0] == 1 ? Color.red : (command[1] == 1 ? Color.green : (command[2] == 1 ? Color.yellow : Color.gray))) :  Color.gray)
                                                 .opacity(0.5)
                                                 .frame(width:screenWidth/7.2,height: screenWidth/7.2)
                                         }
@@ -379,25 +463,44 @@ struct Game_human: View {
                             .frame(width: screenWidth/8, height: 8)
                     }
                 }
-                /*HStack{
-                                    }*/
-                Spacer()
+                HStack{
+                    Circle() //stop
+                        .stroke(Color.black, lineWidth: 3)
+                        .frame(width: screenWidth/5.8, height:screenWidth/5.8)
+                        .overlay(Text(language == "English" ? "End" : "結束"))
+                        .onTapGesture(perform: {
+                            command[0]=0
+                            command[1]=0
+                            command[2]=0
+                            Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["turnToWho":whoIsNext()],merge:true)
+                        })
+                    Circle() //suicide
+                        .stroke(Color.black, lineWidth: 3)
+                        .frame(width: screenWidth/5.8, height:screenWidth/5.8)
+                        .overlay(Text(language == "English" ? "suicide" : "自殺"))
+                        .onTapGesture(perform: {
+                            Firestore.firestore().collection("games").document("\(roomID)").collection("players").document("p\(whichPlayer)").setData(["isDead":true],merge:true)
+                            Firestore.firestore().collection("games").document("\(roomID)").collection("map").document("info").setData(["turnToWho":whoIsNext()],merge:true)
+                        })
+                }
+               
+                //Spacer()
                 HStack{
                     ZStack{
                         Circle()
                             .stroke(command[0]==0 ? Color.black : Color.blue, lineWidth: 5)
                             .frame(width: screenWidth/5.8, height:screenWidth/5.8)
                         Circle()
-                            .fill(Color.orange)
+                            .fill(game.turnToWho == whichPlayer ? Color.orange : Color.gray)
                             .frame(width: screenWidth/6, height: screenWidth/6)
                             .overlay(
                                 VStack{
-                                    Text("ATK")
+                                    Text(language == "English" ? "ATK" : "攻擊")
                                     Text("⚡1")
                                 }
                             )
                             .onTapGesture {
-                                if command[1] == 0 && command[2] == 0 && energy >= 1{
+                                if command[1] == 0 && command[2] == 0 && energy >= 1 && game.turnToWho == whichPlayer{
                                     command[0] ^= 1
                                     
                                 }
@@ -408,16 +511,16 @@ struct Game_human: View {
                             .stroke(command[1]==0 ? Color.black : Color.blue, lineWidth: 5)
                             .frame(width: screenWidth/5.8, height:screenWidth/5.8)
                         Circle()
-                            .fill(Color.green)
+                            .fill(game.turnToWho == whichPlayer ? Color.green : Color.gray)
                             .frame(width: screenWidth/6, height: screenWidth/6)
                             .overlay(
                                 VStack{
-                                    Text("Move")
+                                    Text(language == "English" ? "Move" : "移動")
                                     Text("⚡1")
                                 }
                             )
                             .onTapGesture {
-                                if command[0] == 0 && command[2] == 0 && energy >= 1{
+                                if command[0] == 0 && command[2] == 0 && energy >= 1 && game.turnToWho == whichPlayer{
                                     command[1] ^= 1
                                     
                                 }
@@ -429,16 +532,16 @@ struct Game_human: View {
                             .stroke(command[2]==0 ? Color.black : Color.blue, lineWidth: 5)
                             .frame(width: screenWidth/2.9, height:screenWidth/5.8)
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.red)
+                            .fill(game.turnToWho == whichPlayer ? Color.red : Color.gray)
                             .frame(width: screenWidth/3, height: screenWidth/6)
                             .overlay(
                                 VStack{
-                                    Text("ATK&Move")
+                                    Text(language == "English" ? "ATK&Move" : "移動攻擊")
                                     Text("⚡2")
                                 }
                             )
                             .onTapGesture {
-                                if command[1] == 0 && command[0] == 0 && energy >= 2{
+                                if command[1] == 0 && command[0] == 0 && energy >= 2 && game.turnToWho == whichPlayer{
                                     command[2] ^= 1
                                     
                                 }

@@ -15,6 +15,7 @@ struct playerInfo: View {
     @Binding var ready:Bool
     @Binding var name:String
     @Binding var photoURL:String
+    @Binding var language:String
     var body: some View {
         RoundedRectangle(cornerRadius: 7)
             .fill(type == 0 ?
@@ -38,17 +39,17 @@ struct playerInfo: View {
                             }
                             .frame(width: 100, height: 150)
                             .cornerRadius(20)
-                            Text(name == "" ? "empty" : name)
+                            Text(name == "" ? (language == "English" ? "empty" : "空") : name)
                                 .foregroundColor(name == "" ? Color.white : Color.yellow)
                             Spacer()
-                            Text("ready")
+                            Text(language == "English" ? "ready" : "準備")
                                 .foregroundColor(ready ? Color.green : Color.white)
                         }
                     )
             )
     }
 }
-
+/*
 struct prev1: View{
     @State private var type:Int = 1
     @State private var t=true
@@ -64,3 +65,4 @@ struct room_model_Previews: PreviewProvider {
         prev1()
     }
 }
+*/

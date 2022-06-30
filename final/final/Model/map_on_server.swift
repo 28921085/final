@@ -36,12 +36,14 @@ struct mapInfo: Hashable,Codable, Identifiable {
     var boxOpened:[Int]
     var mainTargetOpened:[Int]
     var turnToWho:Int //1,2,3,4
-    var animateForAll:Bool //all player see last player move (if can see)
+    var gameOver:Int // 0=not over 1=killer win 2=human win
+    //var animateForAll:Bool //all player see last player move (if can see)
     init(){
         type=0
         boxOpened=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] //17 boxes or less
         mainTargetOpened=[0,0,0,0,0,0,0,0]//8 target
         turnToWho=1
-        animateForAll=false
+        gameOver=0
+        //animateForAll=false
     }
 }

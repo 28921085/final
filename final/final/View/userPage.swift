@@ -14,6 +14,7 @@ struct userPage: View {
     @Binding var userMail:String
     @Binding var roomID:Int
     @Binding var whichPlayer:Int
+    @Binding var language:String
     @State private var roomNum:String=""
     var body: some View {
         VStack{
@@ -26,7 +27,7 @@ struct userPage: View {
                             .fill(Color.blue)
                             .frame(width: 70, height: 30, alignment: .center)
                             .overlay(
-                                Text("上一頁")
+                                Text(language == "English" ? "back" : "上一頁")
                                     .foregroundColor(Color.white)
                             )
                     }
@@ -40,7 +41,7 @@ struct userPage: View {
                                 .fill(Color.blue)
                                 .frame(width: 120, height: 60, alignment: .center)
                                 .overlay(
-                                    Text("👤帳戶中心")
+                                    Text(language == "English" ? "👤Account" : "👤帳戶中心")
                                         .foregroundColor(Color.white)
                                 )
                         }
@@ -68,10 +69,15 @@ struct userPage: View {
                             .fill(Color.blue)
                             .frame(width: 60, height: 30, alignment: .center)
                             .overlay(
-                                Text("登出")
+                                Text(language == "English" ? "Logout" : "登出")
                                     .foregroundColor(Color.white)
                             )
                     }
+                }
+                Button{
+                    viewController = 9
+                }label:{
+                    Text("⚙️")
                 }
                 Link(destination: URL(string: "https://medium.com/@seer.28921085/ios-%E9%81%8A%E6%88%B2-%E6%9C%9F%E6%9C%AB%E4%BD%9C%E6%A5%ADpart-2-demo-5c6caa7813a2")!
                      , label: {
@@ -79,7 +85,7 @@ struct userPage: View {
                 })
                 
             }
-            Button{
+            /*Button{
                 
                 //viewController=6
             }label:{
@@ -94,10 +100,10 @@ struct userPage: View {
                             )
                     }
                 }
-            }
+            }*/
             HStack{
                 Spacer()
-                TextField("Enter room number", text: $roomNum)
+                TextField(language == "English" ? "Enter room number" : "輸入房間號碼", text: $roomNum)
                     .autocapitalization(.none)
                     .frame(width: 120, height:30 )
                 Button{
@@ -143,7 +149,7 @@ struct userPage: View {
                                 .fill(Color.green)
                                 .frame(width: 120, height: 60, alignment: .center)
                                 .overlay(
-                                    Text("加入房間")
+                                    Text(language == "English" ? "Join Room" : "加入房間")
                                         .foregroundColor(Color.white)
                                 )
                         }
@@ -178,7 +184,7 @@ struct userPage: View {
                             .fill(Color.red)
                             .frame(width: 120, height: 60, alignment: .center)
                             .overlay(
-                                Text("創建房間")
+                                Text(language == "English" ? "Create Room" : "創建房間")
                                     .foregroundColor(Color.white)
                             )
                     }
